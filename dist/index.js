@@ -172,7 +172,7 @@ var Dropdown = function (_Component) {
           value: value,
           label: label
         },
-        isOpen: true
+        isOpen: false
       };
       this.fireChangeEvent(newState);
       this.dropdownButton.focus();

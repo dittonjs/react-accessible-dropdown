@@ -133,7 +133,7 @@ class Dropdown extends Component {
         value,
         label
       },
-      isOpen: true
+      isOpen: false
     };
     this.fireChangeEvent(newState);
     this.dropdownButton.focus();
