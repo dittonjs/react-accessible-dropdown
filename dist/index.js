@@ -186,7 +186,7 @@ var Dropdown = function (_Component) {
       var _classNames,
           _this2 = this;
 
-      var optionClass = (0, _classnames2.default)((_classNames = {}, _defineProperty(_classNames, this.props.baseClassName + '-option', true), _defineProperty(_classNames, 'is-selected', option === this.state.selected.value || option === this.state.selected), _classNames));
+      var optionClass = (0, _classnames2.default)((_classNames = {}, _defineProperty(_classNames, this.props.baseClassName + '-option', true), _defineProperty(_classNames, 'is-selected', option === this.state.selected.value || option === this.state.selected.label || option === this.state.selected), _classNames));
 
       var value = option.value || option.label || option;
       var label = option.label || option.value || option;

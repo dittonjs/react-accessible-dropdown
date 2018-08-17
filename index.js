@@ -144,7 +144,9 @@ class Dropdown extends Component {
     let optionClass = classNames({
       [`${this.props.baseClassName}-option`]: true,
       'is-selected':
-        option === this.state.selected.value || option === this.state.selected
+        option === this.state.selected.value ||
+        option === this.state.selected.label ||
+        option === this.state.selected
     });
 
     let value = option.value || option.label || option;
