@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import classNames from "classnames";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import classNames from 'classnames';
 
-const DEFAULT_PLACEHOLDER_STRING = "Select...";
+const DEFAULT_PLACEHOLDER_STRING = 'Select...';
 
 class Dropdown extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class Dropdown extends Component {
     this.state = {
       selected: props.value || {
         label: props.placeholder || DEFAULT_PLACEHOLDER_STRING,
-        value: ""
+        value: ''
       },
       isOpen: false
     };
@@ -25,25 +25,25 @@ class Dropdown extends Component {
     if (newProps.value && newProps.value !== this.state.selected) {
       this.setState({ selected: newProps.value });
     } else if (!newProps.value && newProps.placeholder) {
-      this.setState({ selected: { label: newProps.placeholder, value: "" } });
+      this.setState({ selected: { label: newProps.placeholder, value: '' } });
     } else if (!newProps.value) {
       this.setState({
-        selected: { label: DEFAULT_PLACEHOLDER_STRING, value: "" }
+        selected: { label: DEFAULT_PLACEHOLDER_STRING, value: '' }
       });
     }
   }
 
   componentDidMount() {
-    document.addEventListener("click", this.handleDocumentClick, false);
-    document.addEventListener("touchend", this.handleDocumentClick, false);
-    document.addEventListener("keydown", this.handleKeyPressEvent, false);
+    document.addEventListener('click', this.handleDocumentClick, false);
+    document.addEventListener('touchend', this.handleDocumentClick, false);
+    document.addEventListener('keydown', this.handleKeyPressEvent, false);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    document.removeEventListener("click", this.handleDocumentClick, false);
-    document.removeEventListener("touchend", this.handleDocumentClick, false);
-    document.removeEventListener("keydown", this.handleKeyPressEvent, false);
+    document.removeEventListener('click', this.handleDocumentClick, false);
+    document.removeEventListener('touchend', this.handleDocumentClick, false);
+    document.removeEventListener('keydown', this.handleKeyPressEvent, false);
   }
 
   handleDocumentClick(event) {
@@ -67,7 +67,7 @@ class Dropdown extends Component {
   }
 
   handleMouseDown(event) {
-    if (event.type === "mousedown" && event.button !== 0) return;
+    if (event.type === 'mousedown' && event.button !== 0) return;
     event.stopPropagation();
     event.preventDefault();
 
@@ -143,7 +143,7 @@ class Dropdown extends Component {
   renderOption(option) {
     let optionClass = classNames({
       [`${this.props.baseClassName}-option`]: true,
-      "is-selected":
+      'is-selected':
         option === this.state.selected.value || option === this.state.selected
     });
 
@@ -152,7 +152,7 @@ class Dropdown extends Component {
     return (
       <div
         role="menuitem"
-        tabIndex={this.props.tabIndex || "0"}
+        tabIndex={this.props.tabIndex || '0'}
         key={value}
         className={optionClass}
         onMouseDown={() => this.setValue(value, label)}
@@ -168,7 +168,7 @@ class Dropdown extends Component {
   buildMenu() {
     let { options, baseClassName } = this.props;
     let ops = options.map(option => {
-      if (option.type === "group") {
+      if (option.type === 'group') {
         let groupTitle = (
           <div className={`${baseClassName}-title`}>{option.name}</div>
         );
@@ -194,9 +194,9 @@ class Dropdown extends Component {
 
   render() {
     const { baseClassName } = this.props;
-    const disabledClass = this.props.disabled ? "Dropdown-disabled" : "";
+    const disabledClass = this.props.disabled ? 'Dropdown-disabled' : '';
     const placeHolderValue =
-      typeof this.state.selected === "string"
+      typeof this.state.selected === 'string'
         ? this.state.selected
         : this.state.selected.label;
     let value = (
@@ -215,13 +215,13 @@ class Dropdown extends Component {
 
     let dropdownClass = classNames({
       [`${baseClassName}-root`]: true,
-      "is-open": this.state.isOpen
+      'is-open': this.state.isOpen
     });
 
     return (
       <div className={dropdownClass}>
         <div
-          tabIndex={this.props.tabIndex || "0"}
+          tabIndex={this.props.tabIndex || '0'}
           role="menu"
           ref={el => {
             this.dropdownButton = el;
@@ -242,5 +242,5 @@ class Dropdown extends Component {
   }
 }
 
-Dropdown.defaultProps = { baseClassName: "Dropdown" };
+Dropdown.defaultProps = { baseClassName: 'Dropdown' };
 export default Dropdown;
