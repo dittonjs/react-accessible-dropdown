@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -50,6 +52,7 @@ var Dropdown = function (_Component) {
     _this.mounted = true;
     _this.handleDocumentClick = _this.handleDocumentClick.bind(_this);
     _this.handleKeyPressEvent = _this.handleKeyPressEvent.bind(_this);
+    _this.isItSelected = _this.isItSelected.bind(_this);
     return _this;
   }
 
@@ -181,12 +184,23 @@ var Dropdown = function (_Component) {
       });
     }
   }, {
+    key: 'isItSelected',
+    value: function isItSelected(option) {
+      var isSelected = false;
+      if ((typeof option === 'undefined' ? 'undefined' : _typeof(option)) === 'object') {
+        isSelected = option.value === this.state.selected.value;
+      } else {
+        isSelected = option === this.state.selected.value || option === this.state.selected;
+      }
+      return isSelected;
+    }
+  }, {
     key: 'renderOption',
     value: function renderOption(option) {
       var _classNames,
           _this2 = this;
 
-      var optionClass = (0, _classnames2.default)((_classNames = {}, _defineProperty(_classNames, this.props.baseClassName + '-option', true), _defineProperty(_classNames, 'is-selected', option === this.state.selected.value || option === this.state.selected.label || option === this.state.selected), _classNames));
+      var optionClass = (0, _classnames2.default)((_classNames = {}, _defineProperty(_classNames, this.props.baseClassName + '-option', true), _defineProperty(_classNames, 'is-selected', this.isItSelected(option)), _classNames));
 
       var value = option.value || option.label || option;
       var label = option.label || option.value || option;

@@ -19,6 +19,7 @@ class Dropdown extends Component {
     this.mounted = true;
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.handleKeyPressEvent = this.handleKeyPressEvent.bind(this);
+    this.isItSelected = this.isItSelected.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -140,13 +141,21 @@ class Dropdown extends Component {
     this.setState(() => newState);
   }
 
+  isItSelected(option) {
+    let isSelected = false;
+    if (typeof option === 'object') {
+      isSelected = option.value === this.state.selected.value;
+    } else {
+      isSelected =
+        option === this.state.selected.value || option === this.state.selected;
+    }
+    return isSelected;
+  }
+
   renderOption(option) {
     let optionClass = classNames({
       [`${this.props.baseClassName}-option`]: true,
-      'is-selected':
-        option === this.state.selected.value ||
-        option === this.state.selected.label ||
-        option === this.state.selected
+      'is-selected': this.isItSelected(option)
     });
 
     let value = option.value || option.label || option;
