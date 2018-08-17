@@ -188,7 +188,7 @@ var Dropdown = function (_Component) {
     value: function isItSelected(option) {
       var isSelected = false;
       if ((typeof option === 'undefined' ? 'undefined' : _typeof(option)) === 'object') {
-        isSelected = option.value === this.state.selected.value;
+        isSelected = option.value === this.state.selected.value || option.label === this.state.selected;
       } else {
         isSelected = option === this.state.selected.value || option === this.state.selected;
       }

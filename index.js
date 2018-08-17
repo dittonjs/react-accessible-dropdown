@@ -144,7 +144,9 @@ class Dropdown extends Component {
   isItSelected(option) {
     let isSelected = false;
     if (typeof option === 'object') {
-      isSelected = option.value === this.state.selected.value;
+      isSelected =
+        option.value === this.state.selected.value ||
+        option.label === this.state.selected;
     } else {
       isSelected =
         option === this.state.selected.value || option === this.state.selected;
