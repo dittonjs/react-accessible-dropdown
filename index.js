@@ -50,14 +50,14 @@ class Dropdown extends Component {
   handleDocumentClick(event) {
     if (this.mounted) {
       if (!ReactDOM.findDOMNode(this).contains(event.target)) {
-        this.setState({ isOpen: false });
+        this.setState(() => ({ isOpen: false }));
       }
     }
   }
 
   handleKeyPressEvent(e) {
     if (e.keyCode === 27) {
-      this.setState({ isOpen: false });
+      this.setState(() => ({ isOpen: false }));
     }
   }
 
@@ -73,14 +73,12 @@ class Dropdown extends Component {
     event.preventDefault();
 
     if (!this.props.disabled) {
-      this.setState({
-        isOpen: !this.state.isOpen
-      });
+      this.setState(() => ({ isOpen: !this.state.isOpen }));
     }
   }
 
   handleDropdownFocus() {
-    this.setState({ isOpen: true });
+    this.setState(() => ({ isOpen: true }));
   }
 
   handleDropdownBlur(e) {
@@ -97,7 +95,7 @@ class Dropdown extends Component {
         }
       }
     }
-    this.setState({ isOpen: stayOpen });
+    this.setState(() => ({ isOpen: stayOpen }));
   }
 
   handleDropdownKeyDown(e) {
@@ -130,15 +128,18 @@ class Dropdown extends Component {
 
   setValue(value, label) {
     let newState = {
+      isOpen: false,
       selected: {
         value,
         label
-      },
-      isOpen: false
+      }
     };
     this.fireChangeEvent(newState);
     this.dropdownButton.focus();
-    this.setState(() => newState);
+    // there seems to be a race condition in IE11 for closing the menu in render, so setTimeout :(
+    setTimeout(() => {
+      this.setState(() => newState);
+    }, 20);
   }
 
   isItSelected(option) {
@@ -215,7 +216,7 @@ class Dropdown extends Component {
     let value = (
       <div className={`${baseClassName}-placeholder`}>{placeHolderValue}</div>
     );
-    let menu = this.state.isOpen ? (
+    let menu = (
       <div
         ref={el => {
           this.dropdownMenu = el;
@@ -224,7 +225,7 @@ class Dropdown extends Component {
       >
         {this.buildMenu()}
       </div>
-    ) : null;
+    );
 
     let dropdownClass = classNames({
       [`${baseClassName}-root`]: true,
@@ -249,7 +250,7 @@ class Dropdown extends Component {
           {value}
           <span className={`${baseClassName}-arrow`} />
         </div>
-        {menu}
+        {this.state.isOpen && menu}
       </div>
     );
   }
