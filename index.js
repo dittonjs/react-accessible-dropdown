@@ -5,7 +5,7 @@ import classNames from 'classnames';
 const DEFAULT_PLACEHOLDER_STRING = 'Select...';
 
 class Dropdown extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
       selected: props.value || {
@@ -19,129 +19,150 @@ class Dropdown extends Component {
     this.mounted = true;
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.handleKeyPressEvent = this.handleKeyPressEvent.bind(this);
+    this.isItSelected = this.isItSelected.bind(this);
   }
 
-  componentWillReceiveProps (newProps) {
+  componentWillReceiveProps(newProps) {
     if (newProps.value && newProps.value !== this.state.selected) {
-      this.setState({selected: newProps.value});
+      this.setState({ selected: newProps.value });
     } else if (!newProps.value && newProps.placeholder) {
-      this.setState({selected: { label: newProps.placeholder, value: '' }});
-    } else if (!newProps.value){
-      this.setState({selected: { label: DEFAULT_PLACEHOLDER_STRING, value: '' }});
+      this.setState({ selected: { label: newProps.placeholder, value: '' } });
+    } else if (!newProps.value) {
+      this.setState({
+        selected: { label: DEFAULT_PLACEHOLDER_STRING, value: '' }
+      });
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     document.addEventListener('click', this.handleDocumentClick, false);
     document.addEventListener('touchend', this.handleDocumentClick, false);
     document.addEventListener('keydown', this.handleKeyPressEvent, false);
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.mounted = false;
     document.removeEventListener('click', this.handleDocumentClick, false);
     document.removeEventListener('touchend', this.handleDocumentClick, false);
     document.removeEventListener('keydown', this.handleKeyPressEvent, false);
   }
 
-  handleDocumentClick (event) {
+  handleDocumentClick(event) {
     if (this.mounted) {
       if (!ReactDOM.findDOMNode(this).contains(event.target)) {
-        this.setState({ isOpen: false });
+        this.setState(() => ({ isOpen: false }));
       }
     }
   }
 
-  handleKeyPressEvent(e){
-    if(e.keyCode === 27){
-      this.setState({ isOpen: false });
+  handleKeyPressEvent(e) {
+    if (e.keyCode === 27) {
+      this.setState(() => ({ isOpen: false }));
     }
   }
 
-  fireChangeEvent (newState) {
+  fireChangeEvent(newState) {
     if (newState.selected !== this.state.selected && this.props.onChange) {
       this.props.onChange(newState.selected);
     }
   }
 
-  handleMouseDown (event) {
-
+  handleMouseDown(event) {
     if (event.type === 'mousedown' && event.button !== 0) return;
     event.stopPropagation();
     event.preventDefault();
 
     if (!this.props.disabled) {
-      this.setState({
-        isOpen: !this.state.isOpen
-      });
+      this.setState(() => ({ isOpen: !this.state.isOpen }));
     }
   }
 
-  handleDropdownFocus(){
-    this.setState({ isOpen: true });
+  handleDropdownFocus() {
+    this.setState(() => ({ isOpen: true }));
   }
 
-  handleDropdownBlur(e){
+  handleDropdownBlur(e) {
     let stayOpen = false;
-    if(e.relatedTarget === this.dropdownButton){
+    if (e.relatedTarget === this.dropdownButton) {
       stayOpen = true;
-    } else if(this.dropdownMenu){
-      const options = this.dropdownMenu.getElementsByClassName(`${this.props.baseClassName}-option`);
-      for(var i=0; i<options.length; i++){
-        if(e.relatedTarget === options[i]){
+    } else if (this.dropdownMenu) {
+      const options = this.dropdownMenu.getElementsByClassName(
+        `${this.props.baseClassName}-option`
+      );
+      for (var i = 0; i < options.length; i++) {
+        if (e.relatedTarget === options[i]) {
           stayOpen = true;
         }
       }
     }
-    this.setState({ isOpen: stayOpen });
+    this.setState(() => ({ isOpen: stayOpen }));
   }
 
-  handleDropdownKeyDown(e){
-    if(e.keyCode == 40){
+  handleDropdownKeyDown(e) {
+    if (e.keyCode == 40) {
       e.preventDefault();
-      const options = this.dropdownMenu.getElementsByClassName(`${this.props.baseClassName}-option`);
+      const options = this.dropdownMenu.getElementsByClassName(
+        `${this.props.baseClassName}-option`
+      );
       options.length && options[0].focus();
     }
   }
 
-  handleOptionKeyDown(e, value, label){
-    if(e.keyCode == 32 || e.keyCode == 13){
+  handleOptionKeyDown(e, value, label) {
+    if (e.keyCode == 32 || e.keyCode == 13) {
       e.preventDefault();
       this.setValue(value, label);
-    } else if(e.keyCode == 38 || e.keyCode == 40){
+    } else if (e.keyCode == 38 || e.keyCode == 40) {
       e.preventDefault();
-      const options = this.dropdownMenu.getElementsByClassName(`${this.props.baseClassName}-option`);
-      for(var i=0; i<options.length; i++){
-        if(options[i] === e.target){
-          e.keyCode == 38 && i > 0 && options[i-1].focus();
-          e.keyCode == 40 && i < options.length - 1 && options[i+1].focus();
+      const options = this.dropdownMenu.getElementsByClassName(
+        `${this.props.baseClassName}-option`
+      );
+      for (var i = 0; i < options.length; i++) {
+        if (options[i] === e.target) {
+          e.keyCode == 38 && i > 0 && options[i - 1].focus();
+          e.keyCode == 40 && i < options.length - 1 && options[i + 1].focus();
         }
       }
     }
   }
 
-  setValue (value, label) {
+  setValue(value, label) {
     let newState = {
+      isOpen: false,
       selected: {
         value,
         label
-      },
-      isOpen: false
+      }
     };
     this.fireChangeEvent(newState);
     this.dropdownButton.focus();
-    this.setState(newState);
+    // there seems to be a race condition in IE11 for closing the menu in render, so setTimeout :(
+    setTimeout(() => {
+      this.setState(() => newState);
+    }, 20);
   }
 
-  renderOption (option) {
+  isItSelected(option) {
+    let isSelected = false;
+    if (typeof option === 'object') {
+      isSelected =
+        option.value === this.state.selected.value ||
+        option.label === this.state.selected;
+    } else {
+      isSelected =
+        option === this.state.selected.value || option === this.state.selected;
+    }
+    return isSelected;
+  }
+
+  renderOption(option) {
     let optionClass = classNames({
       [`${this.props.baseClassName}-option`]: true,
-      'is-selected': option === this.state.selected,
+      'is-selected': this.isItSelected(option)
     });
 
     let value = option.value || option.label || option;
     let label = option.label || option.value || option;
-
     return (
       <div
         role="menuitem"
@@ -158,12 +179,14 @@ class Dropdown extends Component {
     );
   }
 
-  buildMenu () {
+  buildMenu() {
     let { options, baseClassName } = this.props;
-    let ops = options.map((option) => {
+    let ops = options.map(option => {
       if (option.type === 'group') {
-        let groupTitle = (<div className={`${baseClassName}-title`}>{option.name}</div>);
-        let _options = option.items.map((item) => this.renderOption(item));
+        let groupTitle = (
+          <div className={`${baseClassName}-title`}>{option.name}</div>
+        );
+        let _options = option.items.map(item => this.renderOption(item));
 
         return (
           <div className={`${baseClassName}-group`} key={option.name}>
@@ -176,22 +199,33 @@ class Dropdown extends Component {
       }
     });
 
-    return ops.length ? ops : <div className={`${baseClassName}-noresults`}>No options found</div>;
+    return ops.length ? (
+      ops
+    ) : (
+      <div className={`${baseClassName}-noresults`}>No options found</div>
+    );
   }
 
-  render () {
+  render() {
     const { baseClassName } = this.props;
     const disabledClass = this.props.disabled ? 'Dropdown-disabled' : '';
-    const placeHolderValue = typeof this.state.selected === 'string' ? this.state.selected : this.state.selected.label;
-    let value = (<div className={`${baseClassName}-placeholder`}>{placeHolderValue}</div>);
-    let menu = this.state.isOpen ? (
-        <div
-          ref={(el) => { this.dropdownMenu = el; }}
-          className={`${baseClassName}-menu`}
-        >
-          {this.buildMenu()}
-        </div>
-      ) : null;
+    const placeHolderValue =
+      typeof this.state.selected === 'string'
+        ? this.state.selected
+        : this.state.selected.label;
+    let value = (
+      <div className={`${baseClassName}-placeholder`}>{placeHolderValue}</div>
+    );
+    let menu = (
+      <div
+        ref={el => {
+          this.dropdownMenu = el;
+        }}
+        className={`${baseClassName}-menu`}
+      >
+        {this.buildMenu()}
+      </div>
+    );
 
     let dropdownClass = classNames({
       [`${baseClassName}-root`]: true,
@@ -203,7 +237,9 @@ class Dropdown extends Component {
         <div
           tabIndex={this.props.tabIndex || '0'}
           role="menu"
-          ref={(el) => { this.dropdownButton = el; }}
+          ref={el => {
+            this.dropdownButton = el;
+          }}
           onFocus={() => this.handleDropdownFocus()}
           onBlur={e => this.handleDropdownBlur(e)}
           className={`${baseClassName}-control ${disabledClass}`}
@@ -214,11 +250,10 @@ class Dropdown extends Component {
           {value}
           <span className={`${baseClassName}-arrow`} />
         </div>
-        {menu}
+        {this.state.isOpen && menu}
       </div>
     );
   }
-
 }
 
 Dropdown.defaultProps = { baseClassName: 'Dropdown' };
